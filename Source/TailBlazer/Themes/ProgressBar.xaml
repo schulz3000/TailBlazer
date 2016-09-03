@@ -100,8 +100,7 @@
                                 <Condition Property="IsIndeterminate" Value="True" />
                                 <Condition Property="IsVisible" Value="True" />
                             </MultiTrigger.Conditions>
-                            <MultiTrigger.EnterActions>
-                                <RemoveStoryboard BeginStoryboardName="IsFullyIndeterminateStoryboard" />
+                            <MultiTrigger.EnterActions>                                
                                 <BeginStoryboard Storyboard="{StaticResource IsIndeterminateStoryboard}"
                                                          Name="IsIndeterminateStoryboard"/>
                             </MultiTrigger.EnterActions>
@@ -115,8 +114,7 @@
                                 <Condition Property="Value" Value="0" />
                                 <Condition Property="IsVisible" Value="True" />
                             </MultiTrigger.Conditions>
-                            <MultiTrigger.EnterActions>
-                                <RemoveStoryboard BeginStoryboardName="IsIndeterminateStoryboard" />
+                            <MultiTrigger.EnterActions>                                
                                 <BeginStoryboard Storyboard="{StaticResource IsFullyIndeterminateScaleStoryboard}"
                                                          Name="IsFullyIndeterminateStoryboard"/>
                             </MultiTrigger.EnterActions>

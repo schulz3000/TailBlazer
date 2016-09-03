@@ -260,7 +260,7 @@
                             Content="Follow Tail">
                             <CheckBox.InputBindings>
                                 <KeyBinding Key="Space"
-                                Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.KeyAutoTail}"/>
+                                Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.KeyAutoTail}"/>
                             </CheckBox.InputBindings>
                         </CheckBox>
 
