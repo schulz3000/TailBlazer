@@ -44,8 +44,8 @@
     <ApplicationIcon>tailblazer.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dragablz, Version=0.0.3.163, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dragablz.0.0.3.163\lib\net45\Dragablz.dll</HintPath>
+    <Reference Include="Dragablz, Version=0.0.3.164, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dragablz.0.0.3.164\lib\net45\Dragablz.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DynamicData, Version=4.7.4.1160, Culture=neutral, processorArchitecture=MSIL">
@@ -160,6 +160,10 @@
     <Compile Include="Infrastucture\ViewFactoryService.cs" />
     <Compile Include="Infrastucture\Virtualisation\VirtualizingWrapPanel.cs" />
     <Compile Include="Infrastucture\WindowAssist.cs" />
+    <Compile Include="Infrastucture\KeyboardNavigation\IKeyboardNavigationHandler.cs" />
+    <Compile Include="Infrastucture\KeyboardNavigation\IPageProvider.cs" />
+    <Compile Include="Infrastucture\KeyboardNavigation\KeyboardNavigationHandler.cs" />
+    <Compile Include="Infrastucture\KeyboardNavigation\KeyboardNavigationType.cs" />
     <Compile Include="Views\DialogServices\IDialogCoordinator.cs" />
     <Compile Include="Views\DialogServices\IDialogViewModel.cs" />
     <Compile Include="Views\Formatting\DefaultColourSelector.cs" />
@@ -193,6 +197,7 @@
     <Compile Include="Views\Searching\IsGlobalToIconConverter.cs" />
     <Compile Include="Views\Searching\SearchHintMessage.cs" />
     <Compile Include="Views\Searching\SearchOptionsProxy.cs" />
+    <Compile Include="Views\Searching\SearchOptionsProxyDataTemplateSelector.cs" />
     <Compile Include="Views\Searching\SearchOptionsView.xaml.cs">
       <DependentUpon>SearchOptionsView.xaml</DependentUpon>
     </Compile>
@@ -393,7 +398,6 @@
   <ItemGroup>
     <Resource Include="FodyWeavers.xml" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.1.29.3\build\portable-net+sl+win+wpa+wp\Fody.targets" Condition="Exists('..\packages\Fody.1.29.3\build\portable-net+sl+win+wpa+wp\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -1,10 +1,10 @@
+using System;
 using System.Text.RegularExpressions;
 
 namespace TailBlazer.Domain.FileHandling.Search
 {
     public class RegexInspector
     {
-        private readonly char[] _specialChars = @"\!@#$%^&*()[]+?".ToCharArray();
 
         private readonly Regex _isPlainText;
 
@@ -15,7 +15,8 @@ namespace TailBlazer.Domain.FileHandling.Search
 
         public bool DoesThisLookLikeRegEx(string text)
         {
-            return !string.IsNullOrEmpty(text) && !_isPlainText.IsMatch(text);
+            var withNegation = text.WithNegation();
+            return !string.IsNullOrEmpty(text) && !_isPlainText.IsMatch(withNegation.Text);
         }
     }
 }

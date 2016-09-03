@@ -11,7 +11,6 @@ namespace TailBlazer.Domain.FileHandling.Search
         private readonly ITextAssociationCollection _textAssociationCollection;
 
         public SearchMetadataFactory(IDefaultIconSelector defaultIconSelector, 
-            IColourProvider colourProvider,
             IDefaultColourSelector defaultColourSelector,
             ITextAssociationCollection textAssociationCollection)
         {
@@ -24,9 +23,11 @@ namespace TailBlazer.Domain.FileHandling.Search
         {
             if (searchText == null) throw new ArgumentNullException(nameof(searchText));
 
-            //maybe key on useRegex as well as text
-            var association = _textAssociationCollection.Lookup(searchText);
+            var withNegation = searchText.WithNegation();
+            var isExclusion = withNegation.IsNegation;
+            searchText = withNegation.Text;
 
+            var association = _textAssociationCollection.Lookup(searchText);
             string icon;
             Hue hue;
 
@@ -40,16 +41,16 @@ namespace TailBlazer.Domain.FileHandling.Search
                 icon = _defaultIconSelector.GetIconFor(searchText, useRegex);
                 hue = _defaultColourSelector.Select(searchText);
             }
-
-
+            
             return new SearchMetadata(index, searchText,
-                filter, 
+               isExclusion ? false: filter, 
                 true, 
                 useRegex, 
                 true,
                 hue , 
                 icon,
-                isGlobal);
+                isGlobal,
+                isExclusion);
         }
 
     }

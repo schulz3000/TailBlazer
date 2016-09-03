@@ -18,13 +18,14 @@ using TailBlazer.Domain.Infrastructure;
 using TailBlazer.Domain.Settings;
 using TailBlazer.Domain.StateHandling;
 using TailBlazer.Infrastucture;
+using TailBlazer.Infrastucture.KeyboardNavigation;
 using TailBlazer.Infrastucture.Virtualisation;
 using TailBlazer.Views.DialogServices;
 using TailBlazer.Views.Searching;
 
 namespace TailBlazer.Views.Tail
 {
-    public class TailViewModel: AbstractNotifyPropertyChanged, ILinesVisualisation, IPersistentView, IDialogViewModel
+    public class TailViewModel: AbstractNotifyPropertyChanged, ILinesVisualisation, IPersistentView, IDialogViewModel, IPageProvider
     {
         private readonly IDisposable _cleanUp;
         private readonly SingleAssignmentDisposable _stateMonitor= new SingleAssignmentDisposable();
@@ -86,8 +87,8 @@ namespace TailBlazer.Views.Tail
             [NotNull] SearchCollection searchCollection, 
             [NotNull] ITextFormatter textFormatter,
             [NotNull] ILineMatches lineMatches,
-            IObjectProvider objectProvider,
-            IDialogCoordinator dialogCoordinator)
+            [NotNull] IObjectProvider objectProvider,
+            [NotNull] IDialogCoordinator dialogCoordinator)
         {
          
             if (logger == null) throw new ArgumentNullException(nameof(logger));
@@ -103,6 +104,8 @@ namespace TailBlazer.Views.Tail
             if (searchCollection == null) throw new ArgumentNullException(nameof(searchCollection));
             if (textFormatter == null) throw new ArgumentNullException(nameof(textFormatter));
             if (lineMatches == null) throw new ArgumentNullException(nameof(lineMatches));
+            if (objectProvider == null) throw new ArgumentNullException(nameof(objectProvider));
+            if (dialogCoordinator == null) throw new ArgumentNullException(nameof(dialogCoordinator));
             if (combinedSearchMetadataCollection == null) throw new ArgumentNullException(nameof(combinedSearchMetadataCollection));
 
             Name = fileWatcher.FullName;
@@ -157,6 +160,7 @@ namespace TailBlazer.Views.Tail
                 .Select(size => size.FormatWithAbbreviation())
                 .DistinctUntilChanged()
                 .ForBinding();
+
 
             //tailer is the main object used to tail, scroll and filter in a file
             var selectedProvider = SearchCollection.Latest.ObserveOn(schedulerProvider.Background);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
@@ -27,8 +28,34 @@ namespace TailBlazer.Domain.FileHandling.Search
             _searchMetadataFactory = searchMetadataFactory;
             _fileWatcher = fileWatcher;
 
-            //Add a complete file display
-            All = _fileWatcher.Latest.Index().Replay(1).RefCount();
+            var exclusionPredicate = combinedSearchMetadataCollection.Combined.Connect()
+                    .IncludeUpdateWhen((current, previous) => !SearchMetadata.EffectsFilterComparer.Equals(current, previous))
+                    .Filter(meta=> meta.IsExclusion)
+                    .ToCollection()
+                    .Select(searchMetadataItems =>
+                    {
+                        Func<string, bool> predicate = null;
+
+                        if (searchMetadataItems.Count == 0)
+                            return predicate;
+                        
+                        var predicates = searchMetadataItems.Select(meta => meta.BuildPredicate()).ToArray();
+                        predicate = str =>
+                        {
+                            return !predicates.Any(item => item(str));
+                        };
+                        return predicate;
+                    }).StartWith((Func<string, bool>)null)
+                    .Replay(1).RefCount();
+
+            All = exclusionPredicate.Select(predicate =>
+            {
+                if (predicate==null)
+                    return _fileWatcher.Latest.Index();
+
+                return _fileWatcher.Latest.Search(predicate);
+
+            }).Switch().Replay(1).RefCount();
 
             //create a collection with 1 item, which is used to show entire file
             var systemSearches = new SourceCache<SearchInfo, string>(t => t.SearchText);
@@ -40,9 +67,24 @@ namespace TailBlazer.Domain.FileHandling.Search
                 .IgnoreUpdateWhen((current,previous)=> SearchMetadata.EffectsFilterComparer.Equals(current, previous))
                 .Transform(meta =>
                 {
-                    var latest = _fileWatcher.Latest
-                        .Search(meta.BuildPredicate())
-                        .Replay(1).RefCount();
+                    var latest = exclusionPredicate
+                                .Select(exclpredicate =>
+                                {
+                                    Func<string, bool> resultingPredicate;
+                                    if (exclpredicate == null)
+                                    {
+                                        resultingPredicate = meta.BuildPredicate();
+                                    }
+                                    else
+                                    {
+                                        var toMatch = meta.BuildPredicate();
+                                        resultingPredicate =  str=> toMatch(str) && exclpredicate(str);
+                                    }
+                                    return _fileWatcher.Latest.Search(resultingPredicate);
+
+                                })
+                                .Switch()
+                                .Replay(1).RefCount();
 
                     return new SearchInfo(meta.SearchText, meta.IsGlobal, latest, SearchType.User);
                 });
